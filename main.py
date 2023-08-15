@@ -12,19 +12,16 @@ if __name__ == "__main__":
   data_manager = DataManager()
   
   app.setStyle("Fusion")
-  #with open("style.qss", "r") as f:
-  #  _style = f.read()
-  #  app.setStyleSheet(_style)
+  with open("gui/style.qss", "r") as f:
+    _style = f.read()
+    app.setStyleSheet(_style)
   
   widget = MainWidget(data_manager)
   widget.resize(800, 600)
   widget.show()
-    
-  data_manager.check_for_existing_data()
-  
-  for pokemon in data_manager.data["pokedex"]:
+      
+  for pokemon in data_manager.get_category("pokedex"):
     species = SpeciesListItem(pokemon.attrib["id"], pokemon.text)
     widget.tabBar.tab1.listWidget.add_species(species)
-
 
   sys.exit(app.exec())

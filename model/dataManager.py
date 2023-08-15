@@ -1,9 +1,11 @@
 import os
-import xml.etree.ElementTree as ET
+from lxml import etree
+
 
 class DataManager:
   
-  def __init__(self):
+  
+  def __init__(self: "DataManager") -> None:
     # Get the user's appdata folder
     self.appdata_folder = os.getenv('APPDATA')
     
@@ -15,13 +17,13 @@ class DataManager:
     # Create a file for your app (optional)
     self.xml_file_path = os.path.join(app_folder, 'data.xml')
     
-    print(self.xml_file_path)
     
-    # Create a dictionary to store main data
-    self.data = {
-      "pokedex": [],
-      "moves": [],
-    }
+    self.data: etree.ElementBase = self.get_xml(self.xml_file_path)
+    
+    
+  def get_category(self, category_name: str) -> list | None:
+    # Get the pokedex
+    return self.data.find(category_name)
     
   
   def add_category(self, category_name):
@@ -30,48 +32,29 @@ class DataManager:
       self.data[category_name] = []
       
   
-  def add_item(self, category_name, item_id, item_name):
-    if category_name in self.data:
-      category = self.data[category_name]
-      item = ET.Element("item", id=str(item_id))
-      item.text = item_name
-      category.append(item)
-      
-  
-  def get_xml(self):
-    root = ET.Element("data")
-    for category_name, items in self.data.items():
-      category_element = ET.SubElement(root, category_name)
-      category_element.extend(items)
-    return ET.tostring(root, encoding="utf-8").decode("utf-8")
-
-
-  def check_for_existing_data(self):
-    # we want to check for existing data in the appdata folder
+  def get_xml(self, path: str) -> etree.ElementBase | None:
     # Read the stored XML file
-    tree = ET.parse(self.xml_file_path)
-    root = tree.getroot()
-    
-    if root is None:
-      print("No data found!")
-      return
-    
-    else: 
-      print("Data found!")
-      self.process_xml_data(root)
-      return
+    with open(path, 'r') as file:
+      tree = etree.parse(file)
+      file.close()
+      return tree
 
 
-  def process_xml_data(self, root: ET.Element):
-    for category in root:
-      
-      if (category.tag == "pokedex"):
-        for pokemon in category:
-          #print(pokemon)
-          #print(pokemon.tag, pokemon.attrib, pokemon.text)
-          self.data["pokedex"].append(pokemon)
-          
-      if (category.tag == "moves"):
-        for move in category:
-          self.data["moves"].append(move)
+  def save_data(self) -> None:
+    # Write the XML file
+    with open(self.xml_file_path, 'w') as file:
+      file.write(etree.tostring(self.data, pretty_print=True).decode('utf-8'))
+      file.close()
+      print("Data saved!")
 
+
+  def check_data(self) -> bool:
+    if self.data is None:
+      print("Data is empty!")
+      return False
+    else:
+      for category in self.data:
+        print(category)
+        for item in category:
+          print(item)
+      return True
