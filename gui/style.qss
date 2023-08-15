@@ -1,0 +1,18 @@
+QTabWidget::pane { /* The tab widget frame */
+  border-top: 1px solid #3d3d3d;
+  position: absolute;
+  background: #3d3d3d;
+}
+
+/* Style the tab using the tab sub-control. Note that
+  it reads QTabBar _not_ QTabWidget */
+QTabBar::tab {
+  background: #181818;
+  border: 0 solid #2b2b2b;
+  min-width: 8ex;
+  padding: 8px;
+}
+
+QTabBar::tab:selected, QTabBar::tab:hover {
+  background: #3d3d3d;
+}
