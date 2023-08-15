@@ -1,7 +1,7 @@
 from PySide6 import QtCore
 from PySide6.QtWidgets import (QAbstractItemView, QHBoxLayout, QLabel,
                                QListView, QListWidget, QListWidgetItem,
-                               QVBoxLayout, QWidget)
+                               QVBoxLayout, QWidget, QLineEdit)
 
 from model.dataManager import DataManager
 
@@ -32,6 +32,8 @@ class PokedexEditor(QWidget):
   @QtCore.Slot()
   def updateForm(self: "PokedexEditor"):
     # get the selected pokemon
+    if len(self.leftBox.listWidget.selectedItems()) == 0:
+      return
     selected = self.leftBox.listWidget.get_species(
       self.leftBox.listWidget.selectedItems()[0])
     if isinstance(selected, SpeciesListItem) == False:
@@ -40,8 +42,7 @@ class PokedexEditor(QWidget):
       return
 
     # add the info to the form
-    self.rightBox.idLabel.setText("#" + str(selected.id))
-    self.rightBox.nameLabel.setText(selected.name)
+    self.rightBox.nameBox.setText(selected.name)
 
 
 class SpeciesList(QListWidget):
@@ -85,8 +86,20 @@ class SpeciesEditor(QVBoxLayout):
     super().__init__()
     self.setAlignment(QtCore.Qt.AlignTop)
 
-    # add a placeholder header
-    self.idLabel = QLabel("#[id]")
-    self.addWidget(self.idLabel)
-    self.nameLabel = QLabel("[name]")
-    self.addWidget(self.nameLabel)
+    nameLabel = QLabel("Name: ")
+    self.nameBox = QLineEdit()
+    self.addLayout(Helpers.WrapInHBoxLayout(nameLabel, self.nameBox))
+
+
+class Helpers():
+  def WrapInVBoxLayout(*widgets) -> QVBoxLayout:
+    layout = QVBoxLayout()
+    for widget in widgets:
+      layout.addWidget(widget)
+    return layout
+
+  def WrapInHBoxLayout(*widgets) -> QHBoxLayout:
+    layout = QHBoxLayout()
+    for widget in widgets:
+      layout.addWidget(widget)
+    return layout
