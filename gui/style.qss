@@ -1,5 +1,5 @@
 QTabWidget::pane { /* The tab widget frame */
-  border-top: 1px solid #3d3d3d;
+  border: 0;
   position: absolute;
   background: #3d3d3d;
 }
@@ -8,9 +8,15 @@ QTabWidget::pane { /* The tab widget frame */
   it reads QTabBar _not_ QTabWidget */
 QTabBar::tab {
   background: #181818;
-  border: 0 solid #2b2b2b;
+  border: 1 solid #3d3d3d;
+  border-top: 0;
+  border-bottom: 0;
   min-width: 8ex;
   padding: 8px;
+}
+
+QTabBar::tab:first {
+  border-left: 0;
 }
 
 QTabBar::tab:selected, QTabBar::tab:hover {

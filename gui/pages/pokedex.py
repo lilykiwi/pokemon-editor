@@ -1,7 +1,7 @@
 from PySide6 import QtCore
 from PySide6.QtWidgets import (QAbstractItemView, QHBoxLayout, QLabel,
                                QListView, QListWidget, QListWidgetItem,
-                               QVBoxLayout, QWidget, QLineEdit)
+                               QVBoxLayout, QWidget, QLineEdit, QPushButton, QComboBox)
 
 from model.dataManager import DataManager
 
@@ -51,7 +51,7 @@ class SpeciesList(QListWidget):
     self.heldData: dict(str, SpeciesListItem) = {}
 
   def add_species(self, species: "SpeciesListItem") -> None:
-    item = QListWidgetItem(species.name)
+    item = QListWidgetItem("#" + species.id + " " + species.name)
     self.addItem(item)
     self.heldData[item.text()] = species
 
@@ -72,6 +72,20 @@ class PokedexList(QVBoxLayout):
     super().__init__()
     self.setAlignment(QtCore.Qt.AlignTop)
 
+    self.searchBox = QLineEdit()
+    self.searchBox.setPlaceholderText("Search (ID or Name)")
+    self.searchBox.setMaximumWidth(125)
+    self.addButton = QPushButton("+")
+    self.addButton.setMaximumWidth(25)
+    self.removeButton = QPushButton("-")
+    self.removeButton.setMaximumWidth(25)
+
+    self.addLayout(Helpers.WrapInHBoxLayout(
+      self.searchBox,
+      self.addButton,
+      self.removeButton,
+    ))
+
     # add the treeview
     self.listWidget = SpeciesList()
     self.addWidget(self.listWidget)
@@ -89,6 +103,37 @@ class SpeciesEditor(QVBoxLayout):
     nameLabel = QLabel("Name: ")
     self.nameBox = QLineEdit()
     self.addLayout(Helpers.WrapInHBoxLayout(nameLabel, self.nameBox))
+
+    # TODO: move this to a model definition so that it can be redefined and used to compute weaknesses and stuff
+    self.typeList = [
+        "Normal",
+        "Fire",
+        "Water",
+        "Grass",
+        "Electric",
+        "Ice",
+        "Fighting",
+        "Poison",
+        "Ground",
+        "Flying",
+        "Psychic",
+        "Bug",
+        "Rock",
+        "Ghost",
+        "Dragon",
+        "Dark",
+        "Steel",
+        "Fairy",
+        "Unknown",
+        "None",
+    ]
+
+    # this is pretty cumbersome given that we only have three inputs right now. perhaps there's a way to abstract this and provide an interface? or maybe we need a system that can generate these based on a model definition?
+    self.typeOne = QComboBox()
+    self.typeTwo = QComboBox()
+    self.typeOne.addItems(self.typeList)
+    self.typeTwo.addItems(self.typeList)
+    self.addLayout(Helpers.WrapInHBoxLayout(self.typeOne, self.typeTwo))
 
 
 class Helpers():
